@@ -252,8 +252,8 @@ details summary{cursor:pointer;font-size:12px;color:var(--muted);margin-top:8px}
       </div>
 
       <div class="card">
-        <h3>Últimos 6 meses</h3>
-        <div class="legend"><span style="--c:var(--s1)">Entradas</span><span style="--c:var(--s2)">Saídas</span></div>
+        <h3>Mês a mês<small>a partir do primeiro mês lançado</small></h3>
+        <div class="legend"><span style="--c:var(--in)">Entradas</span><span style="--c:var(--out)">Saídas</span></div>
         <div class="chartbox"><canvas id="chMonths" aria-label="Entradas e saídas dos últimos 6 meses"></canvas></div>
         <details><summary>Ver em tabela</summary><div id="tblMonths"></div></details>
       </div>
@@ -343,7 +343,7 @@ details summary{cursor:pointer;font-size:12px;color:var(--muted);margin-top:8px}
   <label class="f" id="lblCat">Tipo<select id="fCat"></select></label>
   <div class="row2">
     <label class="f" id="lblPay">Pago com<select id="fPay"></select></label>
-    <label class="f">Data<input id="fData" type="date" required></label>
+    <label class="f"><span id="txtData">Data</span><input id="fData" type="date" required></label>
   </div>
   <label class="chk" id="lblPago"><input type="checkbox" id="fPago"><span id="txtPago">Já foi pago</span></label>
   <div class="row2" id="rowParc">
@@ -549,15 +549,18 @@ function renderResumo(){
   hbars($("#byWho"), who, tout);
 
   // 6 meses
-  const keys=[...Array(6)].map((_,i)=>addMonths(curMes,i-5));
+  const ini=addMonths(curMes,-5);
+  const primeiro=rows.map(r=>r.mes).filter(m=>m && m>=ini && m<=curMes).sort()[0] || curMes;
+  const keys=[]; for(let k=primeiro; k<=curMes; k=addMonths(k,1)) keys.push(k);
   const dIn=keys.map(k=>sum(rows.filter(r=>r.mes===k&&r.tipo==="entrada")));
   const dOut=keys.map(k=>sum(rows.filter(r=>r.mes===k&&r.tipo==="saida")));
   $("#tblMonths").innerHTML = `<table class="tv"><tr><th>Mês</th><th>Entradas</th><th>Saídas</th><th>Sobra</th></tr>${keys.map((k,i)=>`<tr><td>${mesNome(k,true)}/${k.slice(2,4)}</td><td>${brl(dIn[i])}</td><td>${brl(dOut[i])}</td><td>${brl(dIn[i]-dOut[i])}</td></tr>`).join("")}</table>`;
   if(!window.Chart) return;
   const cs=getComputedStyle(document.documentElement), c=v=>cs.getPropertyValue(v).trim();
+  const cp = keys.length<3? 0.35 : 0.8;   // poucos meses: barras juntas no meio
   const data={ labels:keys.map(k=>mesNome(k,true)), datasets:[
-    {label:"Entradas",data:dIn,backgroundColor:c("--s1"),borderRadius:4,borderSkipped:"start",maxBarThickness:28},
-    {label:"Saídas",data:dOut,backgroundColor:c("--s2"),borderRadius:4,borderSkipped:"start",maxBarThickness:28}]};
+    {label:"Entradas",data:dIn,backgroundColor:c("--in"),borderRadius:4,borderSkipped:"start",maxBarThickness:48,categoryPercentage:cp,barPercentage:0.9},
+    {label:"Saídas",data:dOut,backgroundColor:c("--out"),borderRadius:4,borderSkipped:"start",maxBarThickness:48,categoryPercentage:cp,barPercentage:0.9}]};
   const opts={responsive:true,maintainAspectRatio:false,animation:false,
     interaction:{mode:"index",intersect:false},
     plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${brl(ctx.parsed.y)}`,
@@ -581,14 +584,14 @@ function renderSituacao(){
   Object.keys(porDia).sort().forEach(d=>{ acc+=porDia[d]; if(acc<min-0.004){ min=acc; minDia=d; } });
   const late=mr.filter(isLate);
   let al="";
-  if(late.length) al+=`<div class="alert bad"><b>${late.length} atrasad${late.length>1?"as":"a"}</b>: ${late.slice(0,3).map(r=>esc(r.descricao||r.categoria)).join(", ")}${late.length>3?"…":""}. Se já pagou, marque como pago.</div>`;
+  if(late.length) al+=`<div class="alert bad"><b>${late.length} atrasad${late.length>1?"as":"a"}</b>: ${late.slice(0,3).map(r=>esc(r.descricao||r.categoria)).join(", ")}${late.length>3?"…":""}. A data já passou: se já ${late.every(r=>r.tipo==="entrada")?"recebeu":"pagou"}, toque em "${late.every(r=>r.tipo==="entrada")?"Recebi":"Paguei"}"; se a data está errada, toque no lançamento e corrija.</div>`;
   if(minDia && min<0){ const [,mm,dd]=minDia.split("-"); al+=`<div class="alert bad">No dia <b>${dd}/${mm}</b> as saídas do mês passam <b>${brl(-min)}</b> do que entrou até ali. Confira se tem saldo ou limite para cobrir até o dinheiro entrar.</div>`; }
   else if(mr.length && fOut>0 && !late.length) al+=`<div class="alert ok">Pelas datas lançadas, o que entra no mês cobre o que sai em todos os dias.</div>`;
   $("#sAlert").innerHTML=al;
 
   const next=mr.filter(r=>!isPago(r)).sort((a,b)=>a.data.localeCompare(b.data)).slice(0,6);
   $("#sNext").innerHTML = next.length? `<h3 style="margin:14px 0 2px">Próximos</h3>`+next.map(r=>{ const [,mm,dd]=r.data.split("-");
-    return `<div class="nx"><div class="grow"><b>${esc(r.descricao||r.categoria)}</b><small>${dd}/${mm} · ${r.tipo==="entrada"?"a receber":"a pagar"}</small></div><span style="font-weight:700;color:${r.tipo==="entrada"?"var(--in)":"var(--out)"};white-space:nowrap">${brl(r.valor)}</span><button class="pill mark" data-pay="${esc(r.id)}">${r.tipo==="entrada"?"Recebi":"Paguei"}</button></div>`; }).join("") : "";
+    return `<div class="nx" data-edit="${esc(r.id)}" style="cursor:pointer"><div class="grow"><b>${esc(r.descricao||r.categoria)}</b><small>${dd}/${mm} · ${r.tipo==="entrada"?"a receber":"a pagar"}</small></div><span style="font-weight:700;color:${r.tipo==="entrada"?"var(--in)":"var(--out)"};white-space:nowrap">${brl(r.valor)}</span><button class="pill mark" data-pay="${esc(r.id)}">${r.tipo==="entrada"?"Recebi":"Paguei"}</button></div>`; }).join("") : "";
 }
 
 async function marcarPago(id, val=true){
@@ -618,7 +621,7 @@ function renderLista(){
     if(r.data!==last){ last=r.data; const [y,m,d]=r.data.split("-").map(Number); html+=`<div class="day">${cap(new Date(y,m-1,d).toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"long"}))}</div>`; }
     const sinal=r.tipo==="entrada"?"+":"−";
     const pg=isPago(r), lt=isLate(r);
-    const pill = pg? "" : `<button class="pill${lt?" late":""}" data-pay="${esc(r.id)}" title="Toque para marcar como ${r.tipo==="entrada"?"recebido":"pago"}">${lt?"atrasado":(r.tipo==="entrada"?"a receber":"a pagar")}</button>`;
+    const pill = pg? "" : `<button class="pill${lt?" late":""}" data-pay="${esc(r.id)}" title="Toque para marcar como ${r.tipo==="entrada"?"recebido":"pago"}">${lt?(r.tipo==="entrada"?"não recebido":"atrasado"):(r.tipo==="entrada"?"a receber":"a pagar")}</button>`;
     html+=`<div class="item${pg?"":" pendente"}" data-id="${esc(r.id)}"><div class="d"><b>${esc(r.descricao||r.categoria)}</b><span>${esc(r.categoria)}${r.tipo==="saida"&&r.forma?" · "+esc(r.forma):""} · ${esc(r.quem||"")}</span></div>${pill}<div class="val ${r.tipo==="entrada"?"in":"out"}">${sinal} ${brl(r.valor)}</div></div>`;
   }
   $("#list").innerHTML=html;
@@ -666,11 +669,14 @@ function setTipo(t, segSel, catSel, paySel, payLbl){
   $(payLbl).style.visibility = t==="entrada"?"hidden":"visible";
 }
 let pagoTocado=false;
-function updPagoTxt(){ $("#txtPago").textContent = fTipo==="entrada"? "Já recebi" : "Já foi pago"; }
+function updPagoTxt(){
+  $("#txtPago").textContent = fTipo==="entrada"? "Já recebi" : "Já foi pago";
+  $("#txtData").textContent = $("#fPago").checked? (fTipo==="entrada"?"Recebido em":"Pago em") : (fTipo==="entrada"?"Dia que vai cair":"Dia do vencimento");
+}
 $("#tipoSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; fTipo=b.dataset.t; setTipo(fTipo,"#tipoSeg","#fCat","#fPay","#lblPay"); updPagoTxt(); };
-$("#fPago").addEventListener("change",()=>{ pagoTocado=true; });
+$("#fPago").addEventListener("change",()=>{ pagoTocado=true; updPagoTxt(); });
 // data no futuro = ainda não pago (até a pessoa marcar na mão)
-$("#fData").addEventListener("change",()=>{ if(!pagoTocado && $("#fData").value) $("#fPago").checked = $("#fData").value <= hoje(); });
+$("#fData").addEventListener("change",()=>{ if(!pagoTocado && $("#fData").value) $("#fPago").checked = $("#fData").value <= hoje(); updPagoTxt(); });
 
 function openForm(r){
   editing = r||null;
@@ -734,6 +740,7 @@ $("#btnDel").onclick=async()=>{
 async function saveCfg(){ try{ await store.saveCfg(cfg); }catch(e){ console.error(e); toast("Erro ao salvar ajustes"); } }
 document.addEventListener("click",async e=>{
   if(e.target.closest("[data-launch]")){ openLaunch(); return; }
+  const ed=e.target.closest("[data-edit]"); if(ed){ const r=rows.find(x=>x.id===ed.dataset.edit); if(r) openForm(r); return; }
   const rn=e.target.closest("[data-ren]");
   if(rn){
     const k=rn.dataset.ren, i=+rn.dataset.i, old=cfg[k][i];
