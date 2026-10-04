@@ -195,9 +195,17 @@ details summary{cursor:pointer;font-size:12px;color:var(--muted);margin-top:8px}
   <div class="box">
     <div class="logo">R$</div>
     <h2 style="margin:0 0 6px">Nossas Finanças</h2>
-    <p style="color:var(--ink2);margin:0 0 18px">Entre com a sua conta Google para ver e lançar os gastos da casa.</p>
-    <button class="btn" id="btnLogin">Entrar com Google</button>
-    <p id="loginErr" class="hint" style="color:var(--out)"></p>
+    <p style="color:var(--ink2);margin:0 0 14px">Entre para ver e lançar os gastos da casa.</p>
+    <form id="frmLogin" style="text-align:left">
+      <label class="f">E-mail<input id="lgEmail" type="email" autocomplete="username" inputmode="email" required></label>
+      <label class="f">Senha<input id="lgPass" type="password" autocomplete="current-password" required></label>
+      <button class="btn" type="submit" id="btnEntrar">Entrar</button>
+    </form>
+    <p id="loginErr" class="hint" style="color:var(--out);min-height:1em"></p>
+    <a id="lnkReset" class="hint" style="cursor:pointer;text-decoration:underline">Esqueci a senha</a>
+    <div class="hint" style="margin:18px 0 0">ou</div>
+    <button class="btn ghost" id="btnLogin" style="margin-top:8px">Entrar com Google</button>
+    <p class="hint">No iPhone, prefira e-mail e senha.</p>
   </div>
 </div>
 
@@ -450,8 +458,9 @@ async function makeFirebaseStore(){
   const cfgRef = F.doc(db,"config","casa");
   return {
     onAuth(cb){ A.onAuthStateChanged(auth, u => cb(u ? {email:(u.email||"").toLowerCase(), nome:u.displayName||u.email} : null)); },
-    async login(){ const p=new A.GoogleAuthProvider(); p.setCustomParameters({prompt:"select_account"});
-      try{ await A.signInWithPopup(auth,p); } catch(e){ if(/popup/i.test(e.code||"")) await A.signInWithRedirect(auth,p); else throw e; } },
+    async login(){ const p=new A.GoogleAuthProvider(); p.setCustomParameters({prompt:"select_account"}); await A.signInWithPopup(auth,p); },
+    loginEmail(email,senha){ return A.signInWithEmailAndPassword(auth,email,senha); },
+    resetSenha(email){ return A.sendPasswordResetEmail(auth,email); },
     logout(){ return A.signOut(auth); },
     watch(fromMes, cb, onErr){ const q=F.query(col, F.where("mes",">=",fromMes)); return F.onSnapshot(q, s => cb(s.docs.map(d=>({id:d.id,...d.data()}))), onErr); },
     watchCfg(cb){ return F.onSnapshot(cfgRef, s => cb(s.exists()? s.data() : null)); },
@@ -476,7 +485,7 @@ function makeLocalStore(){
   const uid=()=>Math.random().toString(36).slice(2,11);
   return {
     onAuth(cb){ cb({email:"teste@local", nome:"Teste"}); },
-    login(){}, logout(){ toast("Modo teste: não há login"); },
+    login(){}, loginEmail(){}, resetSenha(){}, logout(){ toast("Modo teste: não há login"); },
     watch(from,cb){ const s={from,cb}; subs.push(s); cb(mem.filter(x=>x.mes>=from)); return ()=>{subs=subs.filter(x=>x!==s)}; },
     watchCfg(cb){ cfgSubs.push(cb); cb(cfgMem); return ()=>{}; },
     async saveCfg(c){ cfgMem=c; try{localStorage.setItem(KC,JSON.stringify(c))}catch(e){} cfgSubs.forEach(f=>f(c)); },
@@ -851,7 +860,31 @@ $("#btnCsv").onclick=async()=>{
   catch(e){ console.error(e); $("#banner").hidden=false; $("#banner").textContent="Não consegui carregar o Firebase. Verifique a internet."; return; }
   if(!useFirebase){ $("#banner").hidden=false; $("#banner").textContent="Modo teste: os dados ficam só neste aparelho. Configure o Firebase para usar a dois."; }
   const allowed = Object.keys(PESSOAS).map(e=>e.toLowerCase());
-  $("#btnLogin").onclick=async()=>{ $("#loginErr").textContent=""; try{ await store.login(); }catch(e){ $("#loginErr").textContent="Não deu para entrar: "+(e.code||e.message); } };
+  const MSG={
+    "auth/invalid-credential":"E-mail ou senha errados.",
+    "auth/wrong-password":"Senha errada.",
+    "auth/user-not-found":"Esse e-mail não tem conta no app.",
+    "auth/invalid-email":"E-mail inválido.",
+    "auth/too-many-requests":"Muitas tentativas. Espere uns minutos e tente de novo.",
+    "auth/network-request-failed":"Sem internet.",
+    "auth/popup-blocked":"O navegador bloqueou a janela do Google. Use e-mail e senha.",
+    "auth/popup-closed-by-user":"A janela do Google foi fechada antes de terminar.",
+    "auth/operation-not-allowed":"Esse tipo de login não está ativado no Firebase.",
+    "auth/unauthorized-domain":"Este endereço não está liberado no Firebase (Domínios autorizados)."
+  };
+  const errMsg=e=>MSG[e.code]||("Não deu para entrar: "+(e.code||e.message));
+  $("#btnLogin").onclick=async()=>{ $("#loginErr").textContent=""; try{ await store.login(); }catch(e){ $("#loginErr").textContent=errMsg(e); } };
+  $("#frmLogin").onsubmit=async e=>{
+    e.preventDefault(); $("#loginErr").textContent=""; $("#btnEntrar").disabled=true; $("#btnEntrar").textContent="Entrando…";
+    try{ await store.loginEmail($("#lgEmail").value.trim(), $("#lgPass").value); }
+    catch(err){ $("#loginErr").textContent=errMsg(err); }
+    finally{ $("#btnEntrar").disabled=false; $("#btnEntrar").textContent="Entrar"; }
+  };
+  $("#lnkReset").onclick=async()=>{
+    const em=$("#lgEmail").value.trim(); if(!em){ $("#loginErr").textContent="Digite seu e-mail acima e toque em \"Esqueci a senha\" de novo."; return; }
+    try{ await store.resetSenha(em); $("#loginErr").style.color="var(--in)"; $("#loginErr").textContent="Enviamos um e-mail para criar uma senha nova. Olhe também o spam."; }
+    catch(err){ $("#loginErr").style.color=""; $("#loginErr").textContent=errMsg(err); }
+  };
   $("#btnLogout").onclick=()=>store.logout();
   let cfgUnsub=null;
   store.onAuth(async u=>{
