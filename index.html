@@ -83,6 +83,36 @@
 .vabox .v{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
 .vchip{border:1px solid var(--line);background:transparent;border-radius:999px;font-size:11px;padding:2px 8px;cursor:pointer;color:var(--muted);white-space:nowrap}
 .vchip.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);font-weight:600}
+/* plano */
+.livre{text-align:center;padding:18px 14px}
+.livre .l{font-size:13px;color:var(--ink2)}
+.livre .big{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15;margin:4px 0 2px}
+.livre .sub{font-size:13px;color:var(--ink2)}
+.livre details{text-align:left;margin-top:10px}
+.lvrow{display:flex;justify-content:space-between;gap:10px;padding:5px 0;font-size:13px;border-bottom:1px dashed var(--line)}
+.lvrow:last-child{border-bottom:0;font-weight:700}
+.lvrow b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.lvvale{margin-top:10px;font-size:12px;color:var(--ink2);background:var(--brand-soft);border-radius:10px;padding:8px 10px}
+table.pf{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+table.pf th{font-size:12px;color:var(--muted);font-weight:500;text-align:right;padding:4px 6px}
+table.pf td{padding:7px 6px;text-align:right;border-top:1px solid var(--line);white-space:nowrap}
+table.pf th:first-child,table.pf td:first-child{text-align:left}
+.pi{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.pi:last-child{border-bottom:0}
+.pi .grow{flex:1;min-width:0}
+.pi .grow b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pi .grow small{display:block;color:var(--muted);font-size:12px}
+.pi .pv{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pi .pv .pl{font-size:12px;color:var(--muted)}
+.pi .pv .ok{font-weight:700;color:var(--in)}
+.pi .pv .okout{font-weight:700;color:var(--ink)}
+.pi .pv .dif{font-size:11px;color:var(--warn)}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:4px}
+.bar.over i{background:var(--out)}
+.tagl{display:inline-block;font-size:10px;font-weight:600;padding:1px 6px;border-radius:999px;background:var(--brand-soft);color:var(--ink2);margin-left:4px;vertical-align:1px}
+.tagl.late{background:color-mix(in srgb,var(--out) 15%,transparent);color:var(--out)}
+.linkinfo{font-size:12px;color:var(--ink2);background:var(--brand-soft);border-radius:8px;padding:6px 10px;margin-top:10px}
 .ed{border:0;background:transparent;color:var(--muted);cursor:pointer;padding:2px 6px;font-size:15px}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -171,8 +201,8 @@ label.f input:focus,label.f select:focus{outline:2px solid var(--brand);outline-
 .addline input,.addline select{flex:1;min-width:0;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
 
 /* Nav */
-nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding-bottom:env(safe-area-inset-bottom);z-index:6}
-nav.tabs button{border:0;background:transparent;padding:9px 0 10px;cursor:pointer;color:var(--muted);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom);z-index:6}
+nav.tabs button{border:0;background:transparent;padding:9px 0 10px;min-width:0;cursor:pointer;color:var(--muted);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px}
 nav.tabs button svg{width:22px;height:22px}
 nav.tabs button.on{color:var(--brand);font-weight:600}
 nav.tabs .plus{width:46px;height:46px;border-radius:50%;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;margin-top:-20px;box-shadow:0 4px 12px rgba(0,0,0,.18)}
@@ -233,29 +263,40 @@ details summary{cursor:pointer;font-size:12px;color:var(--muted);margin-top:8px}
       <button id="mNext" aria-label="Próximo mês">›</button>
     </div>
 
-    <!-- RESUMO -->
-    <section class="view on" id="v-resumo">
+    <!-- PLANO -->
+    <section class="view on" id="v-plano">
       <div class="pendSlot"></div>
+      <div class="card livre">
+        <div class="l" id="lvTit">Livre para gastar em dinheiro</div>
+        <div class="big" id="lvVal">–</div>
+        <div class="sub" id="lvDia"></div>
+        <details><summary class="hint">Como chegou nesse número</summary><div id="lvConta"></div></details>
+        <div id="lvVale"></div>
+      </div>
+      <div id="pAlert"></div>
+      <div class="card">
+        <h3>Plano × Feito<small>o que vocês planejaram e o que aconteceu</small></h3>
+        <div id="pTab"></div>
+        <div class="row2" style="margin-top:12px">
+          <button class="btn sm" id="btnAddPlan" style="width:100%">+ Adicionar item</button>
+          <button class="btn sm ghost" id="btnCopyPlan" style="width:100%">Copiar mês anterior</button>
+        </div>
+      </div>
+      <div class="card"><h3>Entradas<small>salários, vales, extras</small></h3><div id="pIn"></div></div>
+      <div class="card"><h3>Contas<small>um pagamento cada</small></h3><div id="pContas"></div></div>
+      <div class="card"><h3>Limites de gasto<small>vários gastos somados (mercado, delivery…)</small></h3><div id="pLim"></div></div>
+      <div class="card"><h3>Fora do plano<small>gastos e entradas que não estavam previstos</small></h3><div id="pFora"></div></div>
+    </section>
+
+    <!-- EXECUTADO -->
+    <section class="view" id="v-resumo">
       <div class="kpis">
-        <div class="kpi in"><div class="l">Entradas</div><div class="v" id="kIn">–</div></div>
-        <div class="kpi out"><div class="l">Saídas</div><div class="v" id="kOut">–</div></div>
+        <div class="kpi in"><div class="l">Entrou</div><div class="v" id="kIn">–</div></div>
+        <div class="kpi out"><div class="l">Saiu</div><div class="v" id="kOut">–</div></div>
         <div class="kpi"><div class="l">Sobra</div><div class="v" id="kBal">–</div><div class="sub" id="kBalCash" hidden></div></div>
       </div>
-
-      <div class="card" id="sitCard">
-        <h3>Situação do mês<small>o que já aconteceu e o que falta</small></h3>
-        <div class="sit">
-          <div><div class="l">Já entrou</div><div class="v in" id="sJaIn">–</div></div>
-          <div><div class="l">Já saiu</div><div class="v out" id="sJaOut">–</div></div>
-          <div><div class="l">Ainda vai entrar</div><div class="v in" id="sFaltaIn">–</div></div>
-          <div><div class="l">Ainda vai sair</div><div class="v out" id="sFaltaOut">–</div></div>
-          <div class="full"><span class="l" style="font-size:13px">Sobra até agora (só o que já aconteceu)</span><span class="v" id="sAgora">–</span></div>
-          <div class="full" id="sCashRow" hidden style="border-top:0;padding-top:0"><span class="l" style="font-size:13px">Desse valor, em dinheiro (sem o vale)</span><span class="v" id="sCash">–</span></div>
-        </div>
-        <div id="sVale"></div>
-        <div id="sAlert"></div>
-        <div id="sNext"></div>
-      </div>
+      <p class="hint" style="margin:6px 2px 0">Só o que já foi pago ou recebido. O que ainda falta fica na aba Plano.</p>
+      <div id="rVale"></div>
 
       <div class="grid2">
         <div class="card"><h3>Gastos por tipo</h3><div id="byCat"></div></div>
@@ -276,7 +317,6 @@ details summary{cursor:pointer;font-size:12px;color:var(--muted);margin-top:8px}
 
     <!-- LISTA -->
     <section class="view" id="v-lista">
-      <div class="pendSlot"></div>
       <div class="filters" id="listFilters">
         <button class="chip on" data-f="all">Tudo</button>
         <button class="chip" data-f="saida">Saídas</button>
@@ -290,10 +330,10 @@ details summary{cursor:pointer;font-size:12px;color:var(--muted);margin-top:8px}
     <!-- CONFIG -->
     <section class="view" id="v-config">
       <div class="card">
-        <h3>Contas fixas do mês<small>salários, aluguel, acordos…</small></h3>
+        <h3>Contas fixas<small>o modelo que vai para o plano todo mês</small></h3>
         <div id="fixList"></div>
-        <button class="btn" id="btnLaunchFix">Lançar fixos neste mês</button>
-        <p class="hint">Você escolhe quais lançar e pode corrigir o valor antes (ex.: conta de luz). O que já foi lançado no mês não aparece de novo. Mudar o valor de uma conta fixa só vale daqui pra frente: o que já foi lançado continua como estava.</p>
+        <button class="btn" id="btnLaunchFix">Trazer fixos para o plano do mês</button>
+        <p class="hint">Você escolhe quais trazer e pode corrigir o valor antes. O que já está no plano do mês não aparece de novo. Mudar o valor de uma conta fixa só vale daqui pra frente.</p>
         <button class="btn ghost" id="btnAddFix">+ Adicionar conta fixa</button>
       </div>
       <div class="card">
@@ -337,9 +377,10 @@ details summary{cursor:pointer;font-size:12px;color:var(--muted);margin-top:8px}
   </main>
 
   <nav class="tabs">
-    <button data-v="resumo" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Resumo</button>
-    <button data-v="lista"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Lançamentos</button>
+    <button data-v="plano" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M7 13h4M7 17h7"/></svg>Plano</button>
+    <button data-v="resumo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Executado</button>
     <button data-act="novo" aria-label="Novo lançamento"><span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></span></button>
+    <button data-v="lista"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Lançamentos</button>
     <button data-v="config"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Ajustes</button>
   </nav>
 </div>
@@ -350,6 +391,7 @@ details summary{cursor:pointer;font-size:12px;color:var(--muted);margin-top:8px}
     <button type="button" data-t="saida" class="on out">Saída</button>
     <button type="button" data-t="entrada" class="in">Entrada</button>
   </div>
+  <div class="linkinfo" id="fLinkInfo" hidden></div>
   <label class="f">Valor (R$)<input id="fValor" class="big" inputmode="decimal" placeholder="0,00" autocomplete="off" required></label>
   <label class="f">Descrição<input id="fDesc" placeholder="Ex.: Mercado, iFood, conta de luz" autocomplete="off" list="descSug"></label>
   <datalist id="descSug"></datalist>
@@ -381,17 +423,40 @@ details summary{cursor:pointer;font-size:12px;color:var(--muted);margin-top:8px}
     <label class="f">Tipo<select id="fxCat"></select></label>
     <label class="f" id="fxLblPay">Pago com<select id="fxPay"></select></label>
   </div>
-  <label class="f">Dia do mês<input id="fxDia" type="number" min="1" max="31" value="5"></label>
+  <label class="f" id="fxLblModo">Como funciona<select id="fxModo"><option value="conta">Conta (um pagamento, ex.: aluguel)</option><option value="limite">Limite (vários gastos, ex.: mercado)</option></select></label>
+  <label class="f" id="fxLblDia">Dia do mês<input id="fxDia" type="number" min="1" max="31" value="5"></label>
   <p class="hint">Mudou o valor (ex.: reajuste do aluguel)? Altere aqui. Vale para os próximos meses; o que já foi lançado não muda.</p>
   <button class="btn" type="submit">Salvar conta fixa</button>
   <button class="btn danger" id="fxDel" type="button" hidden>Remover conta fixa</button>
   <button class="btn ghost" type="button" id="fxCancel">Cancelar</button>
 </form></dialog>
 
+<!-- DIALOG ITEM DO PLANO -->
+<dialog id="dlgPlan"><form class="in" id="frmPlan" method="dialog">
+  <h3 style="margin:0 0 8px" id="plTit">Item do plano</h3>
+  <div class="seg" id="plTipoSeg">
+    <button type="button" data-t="saida" class="on out">Saída</button>
+    <button type="button" data-t="entrada" class="in">Entrada</button>
+  </div>
+  <label class="f" id="plLblModo">Como funciona<select id="plModo"><option value="conta">Conta (um pagamento, ex.: aluguel)</option><option value="limite">Limite (vários gastos, ex.: mercado)</option></select></label>
+  <label class="f">Descrição<input id="plDesc" placeholder="Ex.: Aluguel, Mercado do mês"></label>
+  <label class="f"><span id="plTxtValor">Valor previsto (R$)</span><input id="plValor" class="big" inputmode="decimal" placeholder="0,00" required></label>
+  <div class="row2">
+    <label class="f">Tipo<select id="plCat"></select></label>
+    <label class="f" id="plLblPay">Pago com<select id="plPay"></select></label>
+  </div>
+  <label class="f" id="plLblDia">Dia do mês<input id="plDia" type="number" min="1" max="31" value="10"></label>
+  <label class="chk" id="plLblFixo"><input type="checkbox" id="plFixo"><span>Repetir todo mês (salvar também como conta fixa)</span></label>
+  <p class="hint" id="plHintLim" hidden>Todo gasto lançado com esse tipo no mês vai descontando deste limite.</p>
+  <button class="btn" type="submit">Salvar no plano</button>
+  <button class="btn danger" id="plDel" type="button" hidden>Tirar do plano</button>
+  <button class="btn ghost" type="button" id="plCancel">Cancelar</button>
+</form></dialog>
+
 <!-- DIALOG LANÇAR FIXOS -->
 <dialog id="dlgLaunch"><form class="in" id="frmLaunch" method="dialog">
-  <h3 style="margin:0 0 2px" id="lnTitle">Lançar contas fixas</h3>
-  <p class="hint" style="margin:0 0 6px">Desmarque o que não entra este mês e corrija o valor se mudou. Elas entram como <b>a pagar / a receber</b>; quando pagar, é só tocar em "Paguei".</p>
+  <h3 style="margin:0 0 2px" id="lnTitle">Trazer contas fixas</h3>
+  <p class="hint" style="margin:0 0 6px">Desmarque o que não entra este mês e corrija o valor se mudou. Elas vão para o <b>plano</b>; quando pagar, é só tocar em "Paguei".</p>
   <div id="lnList"></div>
   <div class="cfgrow" style="border:0"><div class="grow"><b>Total marcado</b></div><b id="lnTot"></b></div>
   <button class="btn" type="submit" id="lnOk">Lançar</button>
@@ -469,48 +534,61 @@ async function makeFirebaseStore(){
   let db;
   try { db = F.initializeFirestore(app,{ localCache: F.persistentLocalCache({tabManager:F.persistentMultipleTabManager()}) }); }
   catch(e){ db = F.getFirestore(app); }
-  const col = F.collection(db,"lancamentos");
   const cfgRef = F.doc(db,"config","casa");
+  function colApi(nome){
+    const col = F.collection(db,nome);
+    return {
+      watch(fromMes, cb, onErr){ const q=F.query(col, F.where("mes",">=",fromMes)); return F.onSnapshot(q, s => cb(s.docs.map(d=>({id:d.id,...d.data()}))), onErr); },
+      add(o){ return F.addDoc(col,{...o, criadoEm:F.serverTimestamp()}); },
+      async addMany(arr){ for(let i=0;i<arr.length;i+=400){ const b=F.writeBatch(db); arr.slice(i,i+400).forEach(o=>b.set(F.doc(col),{...o,criadoEm:F.serverTimestamp()})); await b.commit(); } },
+      update(id,o){ return F.updateDoc(F.doc(col,id),o); },
+      remove(id){ return F.deleteDoc(F.doc(col,id)); },
+      async all(){ const s=await F.getDocs(col); return s.docs.map(d=>({id:d.id,...d.data()})); },
+      async upsertMany(arr){ for(let i=0;i<arr.length;i+=400){ const b=F.writeBatch(db); arr.slice(i,i+400).forEach(({id,...o})=>b.set(F.doc(col,id),o)); await b.commit(); } },
+      async updateMany(ids,patch){ for(let i=0;i<ids.length;i+=400){ const b=F.writeBatch(db); ids.slice(i,i+400).forEach(id=>b.update(F.doc(col,id),patch)); await b.commit(); } }
+    };
+  }
   return {
+    ...colApi("lancamentos"),
+    plano: colApi("plano"),
     onAuth(cb){ A.onAuthStateChanged(auth, u => cb(u ? {email:(u.email||"").toLowerCase(), nome:u.displayName||u.email} : null)); },
     async login(){ const p=new A.GoogleAuthProvider(); p.setCustomParameters({prompt:"select_account"}); await A.signInWithPopup(auth,p); },
     loginEmail(email,senha){ return A.signInWithEmailAndPassword(auth,email,senha); },
     resetSenha(email){ return A.sendPasswordResetEmail(auth,email); },
     logout(){ return A.signOut(auth); },
-    watch(fromMes, cb, onErr){ const q=F.query(col, F.where("mes",">=",fromMes)); return F.onSnapshot(q, s => cb(s.docs.map(d=>({id:d.id,...d.data()}))), onErr); },
     watchCfg(cb){ return F.onSnapshot(cfgRef, s => cb(s.exists()? s.data() : null)); },
-    saveCfg(c){ return F.setDoc(cfgRef, c); },
-    add(o){ return F.addDoc(col,{...o, criadoEm:F.serverTimestamp()}); },
-    async addMany(arr){ const b=F.writeBatch(db); arr.forEach(o=>b.set(F.doc(col),{...o,criadoEm:F.serverTimestamp()})); await b.commit(); },
-    update(id,o){ return F.updateDoc(F.doc(col,id),o); },
-    remove(id){ return F.deleteDoc(F.doc(col,id)); },
-    async all(){ const s=await F.getDocs(col); return s.docs.map(d=>({id:d.id,...d.data()})); },
-    async upsertMany(arr){ for(let i=0;i<arr.length;i+=400){ const b=F.writeBatch(db); arr.slice(i,i+400).forEach(({id,...o})=>b.set(F.doc(col,id),o)); await b.commit(); } },
-    async updateMany(ids,patch){ for(let i=0;i<ids.length;i+=400){ const b=F.writeBatch(db); ids.slice(i,i+400).forEach(id=>b.update(F.doc(col,id),patch)); await b.commit(); } }
+    saveCfg(c){ return F.setDoc(cfgRef, c); }
   };
 }
 
 function makeLocalStore(){
-  const K="fin_local_v1", KC="fin_local_cfg";
-  const read=()=>{ try{return JSON.parse(localStorage.getItem(K)||"[]")}catch(e){return []} };
-  const write=a=>{ try{localStorage.setItem(K,JSON.stringify(a))}catch(e){} mem=a; fire(); };
-  let mem=read(), cfgMem=null, subs=[], cfgSubs=[];
-  try{ cfgMem=JSON.parse(localStorage.getItem(KC)||"null"); }catch(e){}
-  const fire=()=>subs.forEach(s=>s.cb(mem.filter(x=>x.mes>=s.from)));
+  const KC="fin_local_cfg";
   const uid=()=>Math.random().toString(36).slice(2,11);
+  function colApi(K){
+    const read=()=>{ try{return JSON.parse(localStorage.getItem(K)||"[]")}catch(e){return []} };
+    let mem=read(), subs=[];
+    const fire=()=>subs.forEach(s=>s.cb(mem.filter(x=>x.mes>=s.from)));
+    const write=a=>{ try{localStorage.setItem(K,JSON.stringify(a))}catch(e){} mem=a; fire(); };
+    return {
+      watch(from,cb){ const s={from,cb}; subs.push(s); cb(mem.filter(x=>x.mes>=from)); return ()=>{subs=subs.filter(x=>x!==s)}; },
+      async add(o){ write([...mem,{...o,id:uid()}]); },
+      async addMany(arr){ write([...mem,...arr.map(o=>({...o,id:uid()}))]); },
+      async update(id,o){ write(mem.map(x=>x.id===id?{...x,...o}:x)); },
+      async remove(id){ write(mem.filter(x=>x.id!==id)); },
+      async all(){ return mem; },
+      async upsertMany(arr){ const m=new Map(mem.map(x=>[x.id,x])); arr.forEach(o=>m.set(o.id,o)); write([...m.values()]); },
+      async updateMany(ids,patch){ const S=new Set(ids); write(mem.map(x=>S.has(x.id)?{...x,...patch}:x)); }
+    };
+  }
+  let cfgMem=null, cfgSubs=[];
+  try{ cfgMem=JSON.parse(localStorage.getItem(KC)||"null"); }catch(e){}
   return {
+    ...colApi("fin_local_v1"),
+    plano: colApi("fin_local_plano"),
     onAuth(cb){ cb({email:"teste@local", nome:"Teste"}); },
     login(){}, loginEmail(){}, resetSenha(){}, logout(){ toast("Modo teste: não há login"); },
-    watch(from,cb){ const s={from,cb}; subs.push(s); cb(mem.filter(x=>x.mes>=from)); return ()=>{subs=subs.filter(x=>x!==s)}; },
     watchCfg(cb){ cfgSubs.push(cb); cb(cfgMem); return ()=>{}; },
-    async saveCfg(c){ cfgMem=c; try{localStorage.setItem(KC,JSON.stringify(c))}catch(e){} cfgSubs.forEach(f=>f(c)); },
-    async add(o){ write([...mem,{...o,id:uid()}]); },
-    async addMany(arr){ write([...mem,...arr.map(o=>({...o,id:uid()}))]); },
-    async update(id,o){ write(mem.map(x=>x.id===id?{...x,...o}:x)); },
-    async remove(id){ write(mem.filter(x=>x.id!==id)); },
-    async all(){ return mem; },
-    async upsertMany(arr){ const m=new Map(mem.map(x=>[x.id,x])); arr.forEach(o=>m.set(o.id,o)); write([...m.values()]); },
-    async updateMany(ids,patch){ const S=new Set(ids); write(mem.map(x=>S.has(x.id)?{...x,...patch}:x)); }
+    async saveCfg(c){ cfgMem=c; try{localStorage.setItem(KC,JSON.stringify(c))}catch(e){} cfgSubs.forEach(f=>f(c)); }
   };
 }
 
@@ -519,9 +597,10 @@ function makeLocalStore(){
    ========================================================= */
 let cfg = structuredClone(DEFAULT_CFG);
 let rows = [];
+let planRows = [];
 let curMes = mesKey(new Date());
 let listFilter = "all";
-let unsub = null, chart = null;
+let unsub = null, unsubPlano = null, chart = null;
 
 function nomeDe(email){ return PESSOAS[email] || (email||"").split("@")[0]; }
 
@@ -529,6 +608,8 @@ function subscribe(){
   if(unsub) unsub();
   const from = addMonths(curMes,-5);
   unsub = store.watch(from, r => { rows=r; renderAll(); }, err => { console.error(err); toast("Sem permissão para ler os dados. Confira as regras do Firestore."); });
+  if(unsubPlano) unsubPlano();
+  unsubPlano = store.plano.watch(from, r => { planRows=r; renderAll(); }, err => { console.error(err); toast("Sem permissão para ler o plano. Confira as regras do Firestore."); });
 }
 
 const hoje = () => ymd(new Date());
@@ -537,11 +618,14 @@ const isLate = r => !isPago(r) && r.data < hoje();
 const isVale = r => r.tipo==="entrada" ? (cfg.valeIn||[]).includes(r.categoria) : (cfg.valePay||[]).includes(r.forma);
 const saldo = arr => sum(arr.filter(r=>r.tipo==="entrada")) - sum(arr.filter(r=>r.tipo==="saida"));
 function monthRows(m){ return rows.filter(r=>r.mes===m); }
+function planoMes(m){ return planRows.filter(p=>p.mes===m); }
+const modo = p => p.modo==="limite" ? "limite" : "conta";
+function dataDoDia(m,dia){ const [y,mm]=m.split("-").map(Number); const last=new Date(y,mm,0).getDate(); return `${m}-${pad(Math.min(Math.max(1,dia||1),last))}`; }
 function sum(arr){ return Math.round(arr.reduce((a,r)=>a+(+r.valor||0),0)*100)/100; }
 
 function renderAll(){
   $("#mLabel").textContent = cap(mesNome(curMes));
-  renderResumo(); renderSituacao(); renderMesAMes(); renderLista(); renderConfig(); renderPend();
+  renderPlano(); renderResumo(); renderMesAMes(); renderLista(); renderConfig(); renderPend();
 }
 
 function hbars(el, entries, total, alt){
@@ -555,13 +639,20 @@ function hbars(el, entries, total, alt){
 function group(arr,key){ const m={}; arr.forEach(r=>{ const k=r[key]||"—"; m[k]=(m[k]||0)+(+r.valor||0); }); return Object.entries(m).map(([k,v])=>[k,Math.round(v*100)/100]).sort((a,b)=>b[1]-a[1]); }
 
 function renderResumo(){
-  const mr = monthRows(curMes);
+  const mr = monthRows(curMes).filter(isPago);
   const ins = mr.filter(r=>r.tipo==="entrada"), outs = mr.filter(r=>r.tipo==="saida");
   const tin=sum(ins), tout=sum(outs), bal=Math.round((tin-tout)*100)/100;
   $("#kIn").textContent=brl(tin); $("#kOut").textContent=brl(tout);
   const kb=$("#kBal"); kb.textContent=brl(bal); kb.style.color = bal<0?"var(--out)":(bal>0?"var(--in)":"");
   const temVale=mr.some(isVale), kc=$("#kBalCash"); kc.hidden=!temVale;
   if(temVale){ const cash=saldo(mr.filter(r=>!isVale(r))); kc.innerHTML=`em dinheiro<b style="color:${cash<0?"var(--out)":"var(--in)"}">${brl(cash)}</b>`; }
+  const vale=mr.filter(isVale);
+  if(vale.length){ const vIn=sum(vale.filter(r=>r.tipo==="entrada")), vOut=sum(vale.filter(r=>r.tipo==="saida")), vR=vIn-vOut;
+    $("#rVale").innerHTML=`<div class="vabox"><div class="t">Vale-alimentação (só serve para comida)</div>
+      <div><div class="l">Entrou</div><div class="v" style="color:var(--in)">${brl(vIn)}</div></div>
+      <div><div class="l">Gasto</div><div class="v" style="color:var(--out)">${brl(vOut)}</div></div>
+      <div><div class="l">Resta no cartão</div><div class="v" style="color:${vR<0?"var(--out)":"var(--ink)"}">${brl(vR)}</div></div></div>`; }
+  else $("#rVale").innerHTML="";
   hbars($("#byCat"), group(outs,"categoria"), tout);
   hbars($("#byPay"), group(outs,"forma"), tout, true);
   const who = group(outs,"quem");
@@ -571,8 +662,8 @@ function renderResumo(){
   const ini=addMonths(curMes,-5);
   const primeiro=rows.map(r=>r.mes).filter(m=>m && m>=ini && m<=curMes).sort()[0] || curMes;
   const keys=[]; for(let k=primeiro; k<=curMes; k=addMonths(k,1)) keys.push(k);
-  const dIn=keys.map(k=>sum(rows.filter(r=>r.mes===k&&r.tipo==="entrada")));
-  const dOut=keys.map(k=>sum(rows.filter(r=>r.mes===k&&r.tipo==="saida")));
+  const dIn=keys.map(k=>sum(rows.filter(r=>r.mes===k&&r.tipo==="entrada"&&isPago(r))));
+  const dOut=keys.map(k=>sum(rows.filter(r=>r.mes===k&&r.tipo==="saida"&&isPago(r))));
   $("#tblMonths").innerHTML = `<table class="tv"><tr><th>Mês</th><th>Entradas</th><th>Saídas</th><th>Sobra</th></tr>${keys.map((k,i)=>`<tr><td>${mesNome(k,true)}/${k.slice(2,4)}</td><td>${brl(dIn[i])}</td><td>${brl(dOut[i])}</td><td>${brl(dIn[i]-dOut[i])}</td></tr>`).join("")}</table>`;
   if(!window.Chart) return;
   const cs=getComputedStyle(document.documentElement), c=v=>cs.getPropertyValue(v).trim();
@@ -589,42 +680,116 @@ function renderResumo(){
   if(chart){ chart.data=data; chart.options=opts; chart.update(); } else chart=new Chart($("#chMonths"),{type:"bar",data,options:opts});
 }
 
-function renderSituacao(){
-  const mr=monthRows(curMes);
-  const s1=(t,pg)=>sum(mr.filter(r=>r.tipo===t && isPago(r)===pg));
-  const jaIn=s1("entrada",true), jaOut=s1("saida",true), fIn=s1("entrada",false), fOut=s1("saida",false);
-  $("#sJaIn").textContent=brl(jaIn); $("#sJaOut").textContent=brl(jaOut);
-  $("#sFaltaIn").textContent=brl(fIn); $("#sFaltaOut").textContent=brl(fOut);
-  const ag=jaIn-jaOut; const el=$("#sAgora"); el.textContent=brl(ag); el.style.color= ag<0?"var(--out)":"var(--in)";
+/* ---------- PLANO: modelo do mês ---------- */
+function modeloPlano(m){
+  const L = monthRows(m), P = planoMes(m);
+  const fixNoPlano = new Set(P.map(p=>p.fixoId).filter(Boolean));
+  const contas=[], limites=[], virt=[];
+  for(const p of P){
+    if(modo(p)==="limite"){
+      const cons = L.filter(r=>r.tipo==="saida" && !r.planoId && !r.fixoId && r.categoria===p.categoria);
+      limites.push({p, cons, usado:sum(cons)});
+    } else {
+      const lk = L.filter(r=>r.planoId===p.id);
+      contas.push({p, lk, feito:sum(lk.filter(isPago)), feitoTudo: lk.length>0 && lk.every(isPago), temLanc: lk.length>0, data:dataDoDia(m,p.dia)});
+    }
+  }
+  const limCats = new Set(limites.map(x=>x.p.categoria));
+  // lançamentos do jeito antigo (fixos lançados direto) e pendentes avulsos entram no plano como "agendados"
+  for(const r of L){
+    if(r.planoId) continue;
+    if(r.fixoId ? !fixNoPlano.has(r.fixoId) : (!isPago(r) && !(r.tipo==="saida" && limCats.has(r.categoria)))) virt.push(r);
+  }
+  const virtIds = new Set(virt.map(r=>r.id));
+  const fora = L.filter(r=>isPago(r) && !r.planoId && !r.fixoId && !virtIds.has(r.id) && !(r.tipo==="saida" && limCats.has(r.categoria)));
+  return {L,P,contas,limites,virt,fora};
+}
 
-  // vale-alimentação separado do dinheiro
-  const vale=mr.filter(isVale), cashRows=mr.filter(r=>!isVale(r));
-  $("#sCashRow").hidden=!vale.length;
-  if(vale.length){
-    const cAg=saldo(cashRows.filter(isPago)); const ec=$("#sCash"); ec.textContent=brl(cAg); ec.style.color=cAg<0?"var(--out)":"var(--in)";
-    const vIn=sum(vale.filter(r=>r.tipo==="entrada"&&isPago(r))), vOut=sum(vale.filter(r=>r.tipo==="saida"&&isPago(r)));
-    const vFalta=sum(vale.filter(r=>r.tipo==="entrada"&&!isPago(r))), vResta=vIn-vOut;
-    $("#sVale").innerHTML=`<div class="vabox"><div class="t">Vale-alimentação (só serve para comida)</div>
-      <div><div class="l">Entrou</div><div class="v" style="color:var(--in)">${brl(vIn)}</div></div>
-      <div><div class="l">Gasto</div><div class="v" style="color:var(--out)">${brl(vOut)}</div></div>
-      <div><div class="l">Resta no cartão</div><div class="v" style="color:${vResta<0?"var(--out)":"var(--ink)"}">${brl(vResta)}</div></div>
-      ${vFalta>0?`<div style="grid-column:1/-1" class="l">Ainda vai cair ${brl(vFalta)} de vale este mês.</div>`:""}</div>`;
-  } else $("#sVale").innerHTML="";
+// quanto ainda dá para gastar: tudo que entra (já entrou + vai entrar) menos tudo que sai (já saiu + contas a pagar + o que falta dos limites)
+function calcLivre(M, vale){
+  const ok = x => vale ? isVale(x) : !isVale(x);
+  const L=M.L.filter(ok);
+  const contasAbertas = M.contas.filter(c=>!c.temLanc && ok(c.p)).map(c=>c.p);
+  const entrou = sum(L.filter(r=>r.tipo==="entrada"&&isPago(r)));
+  const vaiEntrar = sum(L.filter(r=>r.tipo==="entrada"&&!isPago(r))) + sum(contasAbertas.filter(p=>p.tipo==="entrada"));
+  const saiu = sum(L.filter(r=>r.tipo==="saida"&&isPago(r)));
+  const aPagar = sum(L.filter(r=>r.tipo==="saida"&&!isPago(r))) + sum(contasAbertas.filter(p=>p.tipo==="saida"));
+  const reservado = M.limites.filter(x=>ok(x.p)).reduce((a,x)=>a+Math.max(0,(+x.p.valor||0)-x.usado),0);
+  const livre = Math.round((entrou+vaiEntrar-saiu-aPagar-reservado)*100)/100;
+  return {entrou,vaiEntrar,saiu,aPagar,reservado:Math.round(reservado*100)/100,livre, temAlgo: L.length>0 || contasAbertas.length>0 || M.limites.some(x=>ok(x.p))};
+}
 
-  // pior momento do mês: saldo acumulado dia a dia, só com dinheiro (vale não paga aluguel)
-  const porDia={}; cashRows.forEach(r=>{ porDia[r.data]=(porDia[r.data]||0)+(r.tipo==="entrada"?1:-1)*(+r.valor||0); });
-  let acc=0, min=Infinity, minDia=null;   // o mês é olhado sozinho, sem sobra do mês anterior
-  Object.keys(porDia).sort().forEach(d=>{ acc+=porDia[d]; if(acc<min-0.004){ min=acc; minDia=d; } });
-  const late=mr.filter(isLate);
+function renderPlano(){
+  const M=modeloPlano(curMes), H=hoje(), mesAtual=mesKey(new Date());
+  const C=calcLivre(M,false), V=calcLivre(M,true);
+  // número grande
+  const el=$("#lvVal"); el.textContent=brl(C.livre); el.style.color= C.livre<0?"var(--out)":"var(--in)";
+  const [y,mm]=curMes.split("-").map(Number); const ultimo=new Date(y,mm,0).getDate();
+  if(curMes===mesAtual){
+    const dias = ultimo - new Date().getDate() + 1;
+    $("#lvTit").textContent = C.livre<0 ? "Falta dinheiro para fechar o mês" : "Livre para gastar em dinheiro";
+    $("#lvDia").innerHTML = C.livre>0 ? `≈ <b>${brl(C.livre/dias)}</b> por dia até ${ultimo}/${pad(mm)} (${dias} dia${dias>1?"s":""})` : (C.livre<0? "o que está planejado passa do que entra" : "");
+  } else if(curMes>mesAtual){ $("#lvTit").textContent= C.livre<0? "Vai faltar em dinheiro" : "Deve sobrar em dinheiro"; $("#lvDia").textContent= C.temAlgo? "previsão, pelo que está no plano" : "o plano deste mês ainda está vazio"; }
+  else { $("#lvTit").textContent= C.livre<0? "Faltou em dinheiro" : "Sobrou em dinheiro"; $("#lvDia").textContent="como o mês fechou"; }
+  const linha=(t,v,sinal)=>`<div class="lvrow"><span>${t}</span><b>${sinal}${brl(v)}</b></div>`;
+  $("#lvConta").innerHTML = linha("Já entrou",C.entrou,"")+linha("Ainda vai entrar",C.vaiEntrar,"+ ")+linha("Já saiu",C.saiu,"− ")+linha("Contas que faltam pagar",C.aPagar,"− ")+linha("Reservado nos limites (o que falta gastar)",C.reservado,"− ")+linha("Livre",C.livre,"= ")
+    + `<p class="hint">Não conta o vale-alimentação, que só serve para comida.</p>`;
+  $("#lvVale").innerHTML = V.temAlgo ? `<div class="lvvale">Vale-alimentação: <b>${brl(V.livre)}</b> livre para comida${V.vaiEntrar>0?` (contando ${brl(V.vaiEntrar)} que ainda vai cair)`:""}.</div>` : "";
+
+  // tabela plano × feito
+  const pIn = sum(M.contas.filter(c=>c.p.tipo==="entrada").map(c=>c.p)) + sum(M.virt.filter(r=>r.tipo==="entrada"));
+  const pOut = sum(M.contas.filter(c=>c.p.tipo==="saida").map(c=>c.p)) + sum(M.limites.map(x=>x.p)) + sum(M.virt.filter(r=>r.tipo==="saida"));
+  const fIn = sum(M.L.filter(r=>r.tipo==="entrada"&&isPago(r))), fOut = sum(M.L.filter(r=>r.tipo==="saida"&&isPago(r)));
+  const cor=v=>v<0?"var(--out)":"var(--in)";
+  $("#pTab").innerHTML = (M.P.length||M.L.length) ? `<table class="pf"><tr><th></th><th>Plano</th><th>Feito</th></tr>
+    <tr><td>Entradas</td><td>${brl(pIn)}</td><td style="color:var(--in)">${brl(fIn)}</td></tr>
+    <tr><td>Saídas</td><td>${brl(pOut)}</td><td style="color:var(--out)">${brl(fOut)}</td></tr>
+    <tr><td><b>Sobra</b></td><td style="color:${cor(pIn-pOut)}"><b>${brl(pIn-pOut)}</b></td><td style="color:${cor(fIn-fOut)}"><b>${brl(fIn-fOut)}</b></td></tr></table>
+    <p class="hint">Plano: o que está nas listas abaixo. Feito: o que já foi pago ou recebido, incluindo o que estava fora do plano.</p>`
+    : `<div class="empty">O plano de ${mesNome(curMes)} está vazio.<br>Comece trazendo as contas fixas ou adicionando itens.</div>`;
+
+  // listas
+  const late = d => d < H;
+  const rowConta = c => {
+    const p=c.p, ent=p.tipo==="entrada", [,m2,d2]=c.data.split("-");
+    let st;
+    if(c.feitoTudo){ const dif=Math.round((c.feito-p.valor)*100)/100;
+      st=`<div class="${ent?"ok":"okout"}">✓ ${brl(c.feito)}</div>${Math.abs(dif)>=0.01?`<div class="dif">${dif>0?"+":""}${brl(dif)} do previsto</div>`:`<div class="pl">${ent?"recebido":"pago"}</div>`}`; }
+    else if(c.temLanc){ st=`<div class="pl">${brl(p.valor)}</div><button class="pill" data-pay="${esc(c.lk.find(r=>!isPago(r)).id)}">${ent?"Recebi":"Paguei"}</button>`; }
+    else st=`<div class="pl">${brl(p.valor)}</div><button class="pill mark" data-pplan="${esc(p.id)}">${ent?"Recebi":"Paguei"}</button>`;
+    const atras = !c.feitoTudo && late(c.data);
+    return `<div class="pi" data-pedit="${esc(p.id)}"><div class="grow"><b>${esc(p.descricao||p.categoria)}${atras?`<span class="tagl late">${ent?"não recebido":"atrasado"}</span>`:""}</b><small>dia ${d2}/${m2} · ${esc(p.categoria)}${!ent&&p.forma?" · "+esc(p.forma):""}</small></div><div class="pv">${st}</div></div>`;
+  };
+  const rowVirt = r => {
+    const ent=r.tipo==="entrada", [,m2,d2]=r.data.split("-"), pg=isPago(r);
+    const st = pg ? `<div class="${ent?"ok":"okout"}">✓ ${brl(r.valor)}</div><div class="pl">${ent?"recebido":"pago"}</div>` : `<div class="pl">${brl(r.valor)}</div><button class="pill mark" data-pay="${esc(r.id)}">${ent?"Recebi":"Paguei"}</button>`;
+    return `<div class="pi" data-edit="${esc(r.id)}"><div class="grow"><b>${esc(r.descricao||r.categoria)}${!pg&&late(r.data)?`<span class="tagl late">${ent?"não recebido":"atrasado"}</span>`:""}</b><small>dia ${d2}/${m2} · ${esc(r.categoria)}${!ent&&r.forma?" · "+esc(r.forma):""}</small></div><div class="pv">${st}</div></div>`;
+  };
+  const ordem=(a,b)=>a._d.localeCompare(b._d);
+  const lista = tipo => [...M.contas.filter(c=>c.p.tipo===tipo).map(c=>({_d:c.data,h:rowConta(c)})), ...M.virt.filter(r=>r.tipo===tipo).map(r=>({_d:r.data,h:rowVirt(r)}))].sort(ordem).map(x=>x.h).join("");
+  $("#pIn").innerHTML = lista("entrada") || '<div class="empty">Nenhuma entrada no plano.</div>';
+  $("#pContas").innerHTML = lista("saida") || '<div class="empty">Nenhuma conta no plano.</div>';
+  $("#pLim").innerHTML = M.limites.length ? M.limites.map(x=>{ const p=x.p, pct=p.valor? Math.min(100,x.usado/p.valor*100):0, over=x.usado>p.valor+0.004, falta=Math.round((p.valor-x.usado)*100)/100;
+    return `<div class="pi" data-pedit="${esc(p.id)}" style="display:block"><div style="display:flex;gap:10px;align-items:baseline"><div class="grow"><b>${esc(p.descricao||p.categoria)}</b><small>${esc(p.categoria)} · ${x.cons.length} gasto${x.cons.length!==1?"s":""}</small></div><div class="pv"><b>${brl(x.usado)}</b> <span class="pl">de ${brl(p.valor)}</span></div></div>
+      <div class="bar${over?" over":""}"><i style="width:${pct.toFixed(1)}%"></i></div>
+      <div class="hint" style="margin-top:4px;${over?"color:var(--out)":""}">${over?`Passou ${brl(-falta)} do limite`:`Ainda pode gastar ${brl(falta)}`}</div></div>`; }).join("")
+    : '<div class="empty">Sem limites. Ex.: Mercado R$ 1.000 no mês. Todo gasto lançado como "Mercado" desconta dele.</div>';
+  $("#pFora").innerHTML = M.fora.length ? (()=>{ const out=M.fora.filter(r=>r.tipo==="saida"), inn=M.fora.filter(r=>r.tipo==="entrada");
+      return `<div class="lvrow" style="font-weight:400"><span>${out.length} gasto${out.length!==1?"s":""} fora do plano</span><b style="color:var(--out)">${brl(sum(out))}</b></div>${inn.length?`<div class="lvrow" style="font-weight:400"><span>${inn.length} entrada${inn.length!==1?"s":""} extra</span><b style="color:var(--in)">${brl(sum(inn))}</b></div>`:""}
+      <details><summary class="hint">Ver quais</summary>${M.fora.sort((a,b)=>b.data.localeCompare(a.data)).map(rowVirt).join("")}</details>
+      ${out.length?`<p class="hint">Dica: se algum desses se repete todo mês (ex.: padaria), crie um limite para ele.</p>`:""}`; })()
+    : '<div class="empty">Nada fora do plano neste mês.</div>';
+
+  // alertas: atrasados e dia mais apertado (só dinheiro)
+  const atrasados = [...M.contas.filter(c=>!c.feitoTudo && late(c.data)).map(c=>c.p.descricao||c.p.categoria), ...M.virt.filter(r=>!isPago(r)&&late(r.data)).map(r=>r.descricao||r.categoria)];
+  const ev={}; const addEv=(d,v)=>{ ev[d]=(ev[d]||0)+v; };
+  M.L.filter(r=>!isVale(r)).forEach(r=>addEv(r.data,(r.tipo==="entrada"?1:-1)*(+r.valor||0)));
+  M.contas.filter(c=>!c.temLanc && !isVale(c.p)).forEach(c=>addEv(c.data,(c.p.tipo==="entrada"?1:-1)*(+c.p.valor||0)));
+  let acc=0,min=Infinity,minDia=null; Object.keys(ev).sort().forEach(d=>{ acc+=ev[d]; if(acc<min-0.004){min=acc;minDia=d;} });
   let al="";
-  if(late.length) al+=`<div class="alert bad"><b>${late.length} atrasad${late.length>1?"as":"a"}</b>: ${late.slice(0,3).map(r=>esc(r.descricao||r.categoria)).join(", ")}${late.length>3?"…":""}. A data já passou: se já ${late.every(r=>r.tipo==="entrada")?"recebeu":"pagou"}, toque em "${late.every(r=>r.tipo==="entrada")?"Recebi":"Paguei"}"; se a data está errada, toque no lançamento e corrija.</div>`;
-  if(minDia && min<0){ const [,mm,dd]=minDia.split("-"); al+=`<div class="alert bad">No dia <b>${dd}/${mm}</b> as saídas do mês passam <b>${brl(-min)}</b> do dinheiro que entrou até ali${vale.length?" (sem contar o vale)":""}. Confira se tem saldo ou limite para cobrir até o dinheiro entrar.</div>`; }
-  else if(mr.length && fOut>0 && !late.length) al+=`<div class="alert ok">Pelas datas lançadas, o dinheiro que entra no mês cobre o que sai em todos os dias${vale.length?" (sem contar o vale)":""}.</div>`;
-  $("#sAlert").innerHTML=al;
-
-  const next=mr.filter(r=>!isPago(r)).sort((a,b)=>a.data.localeCompare(b.data)).slice(0,6);
-  $("#sNext").innerHTML = next.length? `<h3 style="margin:14px 0 2px">Próximos</h3>`+next.map(r=>{ const [,mm,dd]=r.data.split("-");
-    return `<div class="nx" data-edit="${esc(r.id)}" style="cursor:pointer"><div class="grow"><b>${esc(r.descricao||r.categoria)}</b><small>${dd}/${mm} · ${r.tipo==="entrada"?"a receber":"a pagar"}</small></div><span style="font-weight:700;color:${r.tipo==="entrada"?"var(--in)":"var(--out)"};white-space:nowrap">${brl(r.valor)}</span><button class="pill mark" data-pay="${esc(r.id)}">${r.tipo==="entrada"?"Recebi":"Paguei"}</button></div>`; }).join("") : "";
+  if(atrasados.length) al+=`<div class="alert bad"><b>${atrasados.length} com data vencida</b>: ${atrasados.slice(0,3).map(esc).join(", ")}${atrasados.length>3?"…":""}. Se já pagou ou recebeu, toque no botão ao lado; se a data está errada, toque no item e corrija.</div>`;
+  if(minDia && min<0 && C.livre>=0){ const [,m2,d2]=minDia.split("-"); al+=`<div class="alert bad">O mês fecha no azul, mas no dia <b>${d2}/${m2}</b> as saídas passam <b>${brl(-min)}</b> do dinheiro que entrou até ali. Confira se tem saldo para segurar até o próximo dinheiro cair.</div>`; }
+  $("#pAlert").innerHTML=al;
 }
 
 async function marcarPago(id, val=true){
@@ -635,10 +800,10 @@ async function marcarPago(id, val=true){
 
 function renderMesAMes(){
   const keys=[addMonths(curMes,-2),addMonths(curMes,-1),curMes];
-  const linhas=keys.map(k=>{ const mr=monthRows(k); if(!mr.length) return null;
-    const v=saldo(mr); const pend=mr.some(r=>!isPago(r));
+  const linhas=keys.map(k=>{ const mr=monthRows(k).filter(isPago); if(!mr.length) return null;
+    const v=saldo(mr); const pend=k===mesKey(new Date());
     const temV=mr.some(isVale), c=saldo(mr.filter(r=>!isVale(r)));
-    return `<div class="cfgrow"><div class="grow">${cap(mesNome(k))}<small>${k===curMes? (pend?"previsto, ainda tem conta pendente":"mês atual") : "como terminou"}</small></div><div style="text-align:right"><b style="white-space:nowrap;color:${v<0?"var(--out)":"var(--in)"}">${brl(v)}</b>${temV?`<small style="display:block;color:var(--muted);font-size:11px;white-space:nowrap">em dinheiro ${brl(c)}</small>`:""}</div></div>`; }).filter(Boolean);
+    return `<div class="cfgrow"><div class="grow">${cap(mesNome(k))}<small>${k===curMes? "até agora" : "como terminou"}</small></div><div style="text-align:right"><b style="white-space:nowrap;color:${v<0?"var(--out)":"var(--in)"}">${brl(v)}</b>${temV?`<small style="display:block;color:var(--muted);font-size:11px;white-space:nowrap">em dinheiro ${brl(c)}</small>`:""}</div></div>`; }).filter(Boolean);
   $("#mesAMes").innerHTML = linhas.length? linhas.join("") + `<p class="hint">Isso não é o saldo do banco: mostra só o que foi lançado no app em cada mês. Se uma sobra negativa foi coberta com limite do cartão ou do cheque especial, ela vira dívida no mês seguinte. Vale lançar essa dívida.</p>` : '<div class="empty">Ainda sem meses lançados.</div>';
 }
 
@@ -660,10 +825,10 @@ function renderLista(){
   $("#list").innerHTML=html;
 }
 
-function fixosPendentes(){ const ja=new Set(monthRows(curMes).map(r=>r.fixoId).filter(Boolean)); return (cfg.fixos||[]).filter(f=>!ja.has(f.id)); }
+function fixosPendentes(){ const ja=new Set([...monthRows(curMes).map(r=>r.fixoId), ...planoMes(curMes).map(p=>p.fixoId)].filter(Boolean)); return (cfg.fixos||[]).filter(f=>!ja.has(f.id)); }
 function renderPend(){
   const p=fixosPendentes();
-  const html = p.length? `<div class="pend"><div class="grow"><b>${p.length}</b> conta${p.length>1?"s":""} fixa${p.length>1?"s":""} ainda não lançada${p.length>1?"s":""} em ${mesNome(curMes)}</div><button class="btn sm" data-launch>Lançar</button></div>` : "";
+  const html = p.length? `<div class="pend"><div class="grow"><b>${p.length}</b> conta${p.length>1?"s":""} fixa${p.length>1?"s":""} fora do plano de ${mesNome(curMes)}</div><button class="btn sm" data-launch>Trazer</button></div>` : "";
   $$(".pendSlot").forEach(el=>el.innerHTML=html);
 }
 function renderConfig(){
@@ -673,10 +838,10 @@ function renderConfig(){
   $("#catInList").innerHTML=cfg.catIn.map((c,i)=>`<div class="cfgrow"><div class="grow">${esc(c)}</div>${vchip("valeIn",c)}${delBtn("catIn",i)}</div>`).join("");
   $("#payList").innerHTML=cfg.pay.map((c,i)=>`<div class="cfgrow"><div class="grow">${esc(c)}</div>${vchip("valePay",c)}${delBtn("pay",i)}</div>`).join("");
   const fx=cfg.fixos||[];
-  const lancados=new Set(monthRows(curMes).map(r=>r.fixoId).filter(Boolean));
+  const lancados=new Set([...monthRows(curMes).map(r=>r.fixoId), ...planoMes(curMes).map(p=>p.fixoId)].filter(Boolean));
   const totIn=sum(fx.filter(f=>f.tipo==="entrada")), totOut=sum(fx.filter(f=>f.tipo!=="entrada"));
-  $("#fixList").innerHTML = fx.length? fx.map((f,i)=>`<div class="cfgrow" data-fx="${i}" style="cursor:pointer"><div class="grow">${esc(f.descricao)} ${lancados.has(f.id)?'<span class="tag">lançado</span>':""}<small>${esc(f.categoria)}${f.tipo!=="entrada"?" · "+esc(f.forma||""):""} · dia ${f.dia||1}</small></div><b style="color:${f.tipo==="entrada"?"var(--in)":"var(--out)"};white-space:nowrap">${f.tipo==="entrada"?"+":"−"} ${brl(f.valor)}</b></div>`).join("")
-    + `<div class="cfgrow"><div class="grow"><b>Previsto só com os fixos</b></div><b style="white-space:nowrap">${brl(totIn-totOut)}</b></div>`
+  $("#fixList").innerHTML = fx.length? fx.map((f,i)=>`<div class="cfgrow" data-fx="${i}" style="cursor:pointer"><div class="grow">${esc(f.descricao)} ${f.modo==="limite"?'<span class="tag">limite</span>':""}${lancados.has(f.id)?'<span class="tag">no plano</span>':""}<small>${esc(f.categoria)}${f.tipo!=="entrada"?" · "+esc(f.forma||""):""}${f.modo==="limite"?"":" · dia "+(f.dia||1)}</small></div><b style="color:${f.tipo==="entrada"?"var(--in)":"var(--out)"};white-space:nowrap">${f.tipo==="entrada"?"+":"−"} ${brl(f.valor)}</b></div>`).join("")
+    + `<div class="cfgrow"><div class="grow"><b>Sobra só com os fixos</b></div><b style="white-space:nowrap">${brl(totIn-totOut)}</b></div>`
     : '<div class="empty">Nenhuma conta fixa ainda.</div>';
 }
 
@@ -695,7 +860,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-pay]"); i
 $("#list").onclick=e=>{ const it=e.target.closest(".item"); if(it) openForm(rows.find(r=>r.id===it.dataset.id)); };
 
 /* ---------- formulário ---------- */
-let fTipo="saida", editing=null;
+let fTipo="saida", editing=null, formLink=null;
 function fillSelect(sel, arr, val){ const opts=[...arr]; if(val && !opts.includes(val)) opts.push(val); sel.innerHTML=opts.map(o=>`<option${o===val?" selected":""}>${esc(o)}</option>`).join(""); }
 function setTipo(t, segSel, catSel, paySel, payLbl){
   $$(segSel+" button").forEach(b=>{ b.classList.toggle("on",b.dataset.t===t); });
@@ -712,19 +877,24 @@ $("#fPago").addEventListener("change",()=>{ pagoTocado=true; updPagoTxt(); });
 // data no futuro = ainda não pago (até a pessoa marcar na mão)
 $("#fData").addEventListener("change",()=>{ if(!pagoTocado && $("#fData").value) $("#fPago").checked = $("#fData").value <= hoje(); updPagoTxt(); });
 
-function openForm(r){
-  editing = r||null;
-  fTipo = r? r.tipo : "saida";
+function openForm(r, preset){
+  editing = r||null; formLink = preset? {planoId:preset.planoId, fixoId:preset.fixoId} : null;
+  if(preset) r=null;
+  fTipo = r? r.tipo : (preset? preset.tipo : "saida");
   setTipo(fTipo,"#tipoSeg","#fCat","#fPay","#lblPay");
-  fillSelect($("#fPay"), cfg.pay, r?.forma);
-  if(r) fillSelect($("#fCat"), fTipo==="entrada"?cfg.catIn:cfg.catOut, r.categoria);
-  $("#fValor").value = r? String(r.valor).replace(".",",") : "";
-  $("#fDesc").value = r? (r.descricao||"") : "";
+  const src = r || preset;
+  fillSelect($("#fPay"), cfg.pay, src?.forma||undefined);
+  if(src) fillSelect($("#fCat"), fTipo==="entrada"?cfg.catIn:cfg.catOut, src.categoria);
+  $("#fValor").value = src? String(src.valor).replace(".",",") : "";
+  $("#fDesc").value = src? (src.descricao||"") : "";
   const today=new Date(); const def = mesKey(today)===curMes? ymd(today) : curMes+"-01";
-  $("#fData").value = r? r.data : def;
-  pagoTocado=false; $("#fPago").checked = r? isPago(r) : def <= hoje(); updPagoTxt();
+  $("#fData").value = r? r.data : (preset? preset.data : def);
+  pagoTocado=!!preset; $("#fPago").checked = r? isPago(r) : (preset? true : def <= hoje()); updPagoTxt();
   $("#fParc").value = 1;
-  $("#rowParc").hidden = !!r;
+  $("#rowParc").hidden = !!r || !!preset;
+  const li=$("#fLinkInfo"); li.hidden=!preset && !(r&&r.planoId);
+  if(preset) li.textContent = `Do plano: ${preset.descricao||preset.categoria} (previsto ${brl(preset.valor)}). Confira o valor e a data reais e salve.`;
+  else if(r&&r.planoId) li.textContent = "Este lançamento é o pagamento de um item do plano.";
   $("#btnDel").hidden = !r;
   $("#btnSave").textContent = r? "Salvar alterações":"Salvar";
   const sug=[...new Set(rows.map(x=>x.descricao).filter(Boolean))].slice(-60);
@@ -752,6 +922,7 @@ $("#frm").onsubmit=async e=>{
     else {
       const n=Math.max(1,Math.min(48,parseInt($("#fParc").value)||1));
       base.quem=me.nome;
+      if(formLink){ if(formLink.planoId) base.planoId=formLink.planoId; if(formLink.fixoId) base.fixoId=formLink.fixoId; }
       if(n===1) await store.add(base);
       else {
         const [y,m,d]=data.split("-").map(Number); const grupo=Math.random().toString(36).slice(2,10);
@@ -774,6 +945,8 @@ $("#btnDel").onclick=async()=>{
 async function saveCfg(){ try{ await store.saveCfg(cfg); }catch(e){ console.error(e); toast("Erro ao salvar ajustes"); } }
 document.addEventListener("click",async e=>{
   if(e.target.closest("[data-launch]")){ openLaunch(); return; }
+  const pp=e.target.closest("[data-pplan]"); if(pp){ const it=planRows.find(x=>x.id===pp.dataset.pplan); if(it) pagarPlano(it); return; }
+  const pe=e.target.closest("[data-pedit]"); if(pe){ const it=planRows.find(x=>x.id===pe.dataset.pedit); if(it) openPlan(it); return; }
   const ed=e.target.closest("[data-edit]"); if(ed){ const r=rows.find(x=>x.id===ed.dataset.edit); if(r) openForm(r); return; }
   const vc=e.target.closest("[data-vale]");
   if(vc){ const l=vc.dataset.vale, n=vc.dataset.nome; cfg[l]=cfg[l]||[]; cfg[l]=cfg[l].includes(n)? cfg[l].filter(x=>x!==n) : [...cfg[l],n]; renderAll(); saveCfg(); return; }
@@ -807,7 +980,9 @@ document.addEventListener("click",async e=>{
 });
 
 let fxTipo="saida", fxEditing=-1;
-$("#fxTipoSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; fxTipo=b.dataset.t; setTipo(fxTipo,"#fxTipoSeg","#fxCat","#fxPay","#fxLblPay"); };
+function updFxModo(){ const lim = fxTipo==="saida" && $("#fxModo").value==="limite"; $("#fxLblModo").hidden = fxTipo!=="saida"; $("#fxLblDia").hidden = lim; }
+$("#fxModo").onchange=updFxModo;
+$("#fxTipoSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; fxTipo=b.dataset.t; setTipo(fxTipo,"#fxTipoSeg","#fxCat","#fxPay","#fxLblPay"); updFxModo(); };
 function openFix(i){
   fxEditing = i ?? -1; const f = i>=0? cfg.fixos[i] : null;
   fxTipo = f? f.tipo : "saida";
@@ -815,6 +990,7 @@ function openFix(i){
   fillSelect($("#fxPay"), cfg.pay, f?.forma);
   if(f) fillSelect($("#fxCat"), fxTipo==="entrada"?cfg.catIn:cfg.catOut, f.categoria);
   $("#fxDesc").value=f?.descricao||""; $("#fxValor").value=f? String(f.valor).replace(".",","):""; $("#fxDia").value=f?.dia||5;
+  $("#fxModo").value=f?.modo==="limite"?"limite":"conta"; updFxModo();
   $("#fxDel").hidden=!f; $("#dlgFix").showModal();
 }
 $("#btnAddFix").onclick=()=>openFix(-1);
@@ -825,7 +1001,8 @@ $("#frmFix").onsubmit=e=>{
   const valor=parseVal($("#fxValor").value); if(!(valor>0)){ toast("Valor inválido"); return; }
   const f={ id: fxEditing>=0? cfg.fixos[fxEditing].id : Math.random().toString(36).slice(2,10),
     tipo:fxTipo, descricao:$("#fxDesc").value.trim(), valor, categoria:$("#fxCat").value,
-    forma: fxTipo==="saida"? $("#fxPay").value:"", dia: Math.max(1,Math.min(31,parseInt($("#fxDia").value)||1)) };
+    forma: fxTipo==="saida"? $("#fxPay").value:"", dia: Math.max(1,Math.min(31,parseInt($("#fxDia").value)||1)),
+    modo: fxTipo==="saida" && $("#fxModo").value==="limite" ? "limite" : "conta" };
   cfg.fixos = cfg.fixos||[];
   if(fxEditing>=0) cfg.fixos[fxEditing]=f; else cfg.fixos.push(f);
   $("#dlgFix").close(); renderConfig(); saveCfg();
@@ -834,15 +1011,15 @@ $("#fxDel").onclick=()=>{ if(fxEditing<0) return; cfg.fixos.splice(fxEditing,1);
 function openLaunch(){
   const fx=cfg.fixos||[]; if(!fx.length){ toast("Cadastre as contas fixas em Ajustes primeiro"); return; }
   const p=fixosPendentes();
-  if(!p.length){ toast("Todos os fixos já estão lançados em "+mesNome(curMes)); return; }
-  $("#lnTitle").textContent="Lançar fixos em "+mesNome(curMes);
-  $("#lnList").innerHTML=p.map(f=>`<label class="lrow" data-id="${esc(f.id)}"><input type="checkbox" checked><span>${esc(f.descricao)}<small>${f.tipo==="entrada"?"Entrada":"Saída"} · ${esc(f.categoria)} · dia ${f.dia||1}</small></span><input class="v" inputmode="decimal" value="${String(f.valor).replace(".",",")}"></label>`).join("");
+  if(!p.length){ toast("Todos os fixos já estão no plano de "+mesNome(curMes)); return; }
+  $("#lnTitle").textContent="Trazer fixos para "+mesNome(curMes);
+  $("#lnList").innerHTML=p.map(f=>`<label class="lrow" data-id="${esc(f.id)}"><input type="checkbox" checked><span>${esc(f.descricao)}<small>${f.tipo==="entrada"?"Entrada":(f.modo==="limite"?"Limite":"Saída")} · ${esc(f.categoria)}${f.modo==="limite"?"":" · dia "+(f.dia||1)}</small></span><input class="v" inputmode="decimal" value="${String(f.valor).replace(".",",")}"></label>`).join("");
   updLaunchTot(); $("#dlgLaunch").showModal();
 }
 function updLaunchTot(){
   let t=0, n=0;
   $$("#lnList .lrow").forEach(r=>{ if(!r.querySelector("input[type=checkbox]").checked) return; const f=(cfg.fixos||[]).find(x=>x.id===r.dataset.id); const v=parseVal(r.querySelector(".v").value)||0; t+= f?.tipo==="entrada"? v : -v; n++; });
-  $("#lnTot").textContent=brl(t); $("#lnOk").textContent = n? `Lançar ${n}` : "Nada marcado";
+  $("#lnTot").textContent=brl(t); $("#lnOk").textContent = n? `Trazer ${n}` : "Nada marcado";
 }
 $("#lnList").addEventListener("input",updLaunchTot);
 $("#lnCancel").onclick=()=>$("#dlgLaunch").close();
@@ -855,11 +1032,76 @@ $("#frmLaunch").onsubmit=async e=>{
     if(!r.querySelector("input[type=checkbox]").checked) continue;
     const f=(cfg.fixos||[]).find(x=>x.id===r.dataset.id); if(!f) continue;
     const v=parseVal(r.querySelector(".v").value); if(!(v>0)){ toast(`Valor inválido em "${f.descricao}"`); return; }
-    const ds=`${curMes}-${pad(Math.min(f.dia||1,last))}`;
-    arr.push({ tipo:f.tipo, valor:v, descricao:f.descricao, categoria:f.categoria, forma:f.forma||"", data:ds, mes:curMes, quem:me.nome, fixoId:f.id, pago:false });
+    arr.push({ mes:curMes, tipo:f.tipo, modo:f.tipo==="saida"&&f.modo==="limite"?"limite":"conta", valor:v, descricao:f.descricao, categoria:f.categoria, forma:f.forma||"", dia:f.dia||1, fixoId:f.id, quem:me.nome });
   }
   if(!arr.length){ $("#dlgLaunch").close(); return; }
-  try{ await store.addMany(arr); $("#dlgLaunch").close(); toast(`${arr.length} lançamento(s) criados`); }catch(err){ console.error(err); toast("Erro ao lançar fixos"); }
+  try{ await store.plano.addMany(arr); $("#dlgLaunch").close(); toast(`${arr.length} item(ns) no plano`); }catch(err){ console.error(err); toast("Erro ao trazer fixos"); }
+};
+
+/* ---------- itens do plano ---------- */
+function pagarPlano(p){
+  const mesAtual=mesKey(new Date());
+  const data = p.mes===mesAtual ? hoje() : dataDoDia(p.mes,p.dia);
+  openForm(null,{tipo:p.tipo, valor:p.valor, descricao:p.descricao, categoria:p.categoria, forma:p.forma, data, planoId:p.id, fixoId:p.fixoId});
+}
+let plTipo="saida", plEditing=null;
+function updPlModo(){
+  const lim = plTipo==="saida" && $("#plModo").value==="limite";
+  $("#plLblModo").hidden = plTipo!=="saida";
+  $("#plLblDia").hidden = lim; $("#plHintLim").hidden = !lim;
+  $("#plTxtValor").textContent = lim? "Limite do mês (R$)" : "Valor previsto (R$)";
+}
+$("#plModo").onchange=updPlModo;
+$("#plTipoSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; plTipo=b.dataset.t; setTipo(plTipo,"#plTipoSeg","#plCat","#plPay","#plLblPay"); updPlModo(); };
+function openPlan(p){
+  plEditing=p||null; plTipo=p? p.tipo : "saida";
+  setTipo(plTipo,"#plTipoSeg","#plCat","#plPay","#plLblPay");
+  fillSelect($("#plPay"), cfg.pay, p?.forma||undefined);
+  if(p) fillSelect($("#plCat"), plTipo==="entrada"?cfg.catIn:cfg.catOut, p.categoria);
+  $("#plModo").value = p&&modo(p)==="limite" ? "limite" : "conta";
+  $("#plDesc").value=p?.descricao||""; $("#plValor").value=p? String(p.valor).replace(".",","):""; $("#plDia").value=p?.dia||10;
+  $("#plFixo").checked=false; $("#plLblFixo").hidden=!!p;
+  $("#plDel").hidden=!p; $("#plTit").textContent = p? "Item do plano" : "Adicionar ao plano de "+mesNome(curMes);
+  updPlModo(); $("#dlgPlan").showModal();
+}
+$("#btnAddPlan").onclick=()=>openPlan(null);
+$("#plCancel").onclick=()=>$("#dlgPlan").close();
+$("#frmPlan").onsubmit=async e=>{
+  e.preventDefault();
+  const valor=parseVal($("#plValor").value); if(!(valor>0)){ toast("Coloque um valor maior que zero"); return; }
+  const lim = plTipo==="saida" && $("#plModo").value==="limite";
+  const cat=$("#plCat").value;
+  if(lim && planoMes(curMes).some(x=>modo(x)==="limite" && x.categoria===cat && x.id!==plEditing?.id)){ toast(`Já existe um limite para "${cat}" neste mês`); return; }
+  const item={ tipo:plTipo, modo: lim?"limite":"conta", valor, descricao:$("#plDesc").value.trim()||cat, categoria:cat,
+    forma: plTipo==="saida"? $("#plPay").value : "", dia: Math.max(1,Math.min(31,parseInt($("#plDia").value)||1)) };
+  try{
+    if(plEditing){ await store.plano.update(plEditing.id, item); toast("Plano atualizado"); }
+    else {
+      if($("#plFixo").checked){
+        const fid=Math.random().toString(36).slice(2,10);
+        cfg.fixos=[...(cfg.fixos||[]), {id:fid, tipo:item.tipo, descricao:item.descricao, valor:item.valor, categoria:item.categoria, forma:item.forma, dia:item.dia, modo:item.modo}];
+        item.fixoId=fid; await saveCfg();
+      }
+      await store.plano.add({...item, mes:curMes, quem:me.nome}); toast("Adicionado ao plano");
+    }
+    $("#dlgPlan").close();
+  }catch(err){ console.error(err); toast("Erro ao salvar o plano: "+(err.code||err.message)); }
+};
+$("#plDel").onclick=async()=>{
+  if(!plEditing) return;
+  if(!confirm("Tirar este item do plano? O que já foi pago ou recebido continua nos lançamentos.")) return;
+  try{ await store.plano.remove(plEditing.id); $("#dlgPlan").close(); toast("Tirado do plano"); }catch(err){ toast("Erro ao remover"); }
+};
+$("#btnCopyPlan").onclick=async()=>{
+  const ant=addMonths(curMes,-1);
+  const atual=planoMes(curMes);
+  const chave=x=>`${x.tipo}|${modo(x)}|${(x.descricao||"").toLowerCase()}|${x.categoria}`;
+  const ja=new Set(atual.map(chave)), jaFix=new Set(atual.map(x=>x.fixoId).filter(Boolean));
+  const cand=planoMes(ant).filter(x=>!ja.has(chave(x)) && !(x.fixoId && jaFix.has(x.fixoId)));
+  if(!cand.length){ toast(planoMes(ant).length? "Tudo do mês anterior já está neste plano" : `O plano de ${mesNome(ant)} está vazio`); return; }
+  if(!confirm(`Copiar ${cand.length} item(ns) do plano de ${mesNome(ant)} para ${mesNome(curMes)}? Depois você ajusta os valores.`)) return;
+  try{ await store.plano.addMany(cand.map(({id,criadoEm,mes,...o})=>({...o, mes:curMes, quem:me.nome}))); toast(`${cand.length} item(ns) copiados`); }
+  catch(err){ console.error(err); toast("Erro ao copiar"); }
 };
 
 /* ---------- exportar / importar JSON ---------- */
@@ -867,7 +1109,8 @@ function baixar(nome, conteudo, tipo){ const blob=new Blob([conteudo],{type:tipo
 $("#btnJson").onclick=async()=>{
   try{
     const all=(await store.all()).map(r=>{ const {criadoEm,...o}=r; return o; }).sort((a,b)=>(a.data||"").localeCompare(b.data||""));
-    const out={ app:"nossas-financas", versao:1, exportadoEm:new Date().toISOString(), config:cfg, lancamentos:all };
+    const plano=(await store.plano.all()).map(r=>{ const {criadoEm,...o}=r; return o; }).sort((a,b)=>(a.mes||"").localeCompare(b.mes||""));
+    const out={ app:"nossas-financas", versao:2, exportadoEm:new Date().toISOString(), config:cfg, lancamentos:all, plano };
     baixar(`nossas-financas_${ymd(new Date())}.json`, JSON.stringify(out,null,1), "application/json");
     toast(`${all.length} lançamento(s) exportados`);
   }catch(err){ console.error(err); toast("Erro ao exportar"); }
@@ -878,13 +1121,16 @@ $("#fileImport").onchange=async e=>{
   let d; try{ d=JSON.parse(await file.text()); }catch(_){ toast("Arquivo inválido: não é um JSON"); return; }
   if(d?.app!=="nossas-financas" || !Array.isArray(d.lancamentos)){ toast("Esse arquivo não é um backup do Nossas Finanças"); return; }
   const ok=d.lancamentos.filter(r=>r && r.id && (r.tipo==="entrada"||r.tipo==="saida") && +r.valor>0 && /^\d{4}-\d{2}-\d{2}$/.test(r.data||""))
-    .map(r=>({ id:String(r.id), tipo:r.tipo, valor:Math.round(+r.valor*100)/100, data:r.data, mes:r.data.slice(0,7), descricao:String(r.descricao||""), categoria:String(r.categoria||"Outros"), forma:String(r.forma||""), quem:String(r.quem||""), pago: r.pago!==false, ...(r.fixoId?{fixoId:String(r.fixoId)}:{}), ...(r.grupo?{grupo:String(r.grupo)}:{}) }));
+    .map(r=>({ id:String(r.id), tipo:r.tipo, valor:Math.round(+r.valor*100)/100, data:r.data, mes:r.data.slice(0,7), descricao:String(r.descricao||""), categoria:String(r.categoria||"Outros"), forma:String(r.forma||""), quem:String(r.quem||""), pago: r.pago!==false, ...(r.fixoId?{fixoId:String(r.fixoId)}:{}), ...(r.grupo?{grupo:String(r.grupo)}:{}), ...(r.planoId?{planoId:String(r.planoId)}:{}) }));
+  const planoOk=(Array.isArray(d.plano)?d.plano:[]).filter(x=>x && x.id && (x.tipo==="entrada"||x.tipo==="saida") && +x.valor>0 && /^\d{4}-\d{2}$/.test(x.mes||""))
+    .map(x=>({ id:String(x.id), mes:x.mes, tipo:x.tipo, modo:x.modo==="limite"?"limite":"conta", valor:Math.round(+x.valor*100)/100, descricao:String(x.descricao||""), categoria:String(x.categoria||"Outros"), forma:String(x.forma||""), dia:+x.dia||1, quem:String(x.quem||""), ...(x.fixoId?{fixoId:String(x.fixoId)}:{}) }));
   const ign=d.lancamentos.length-ok.length;
   const existentes=new Set((await store.all()).map(r=>r.id));
   const novos=ok.filter(r=>!existentes.has(r.id)).length;
-  if(!confirm(`Importar backup de ${d.exportadoEm? new Date(d.exportadoEm).toLocaleDateString("pt-BR"):"data desconhecida"}?\n\n• ${novos} lançamento(s) novos\n• ${ok.length-novos} já existentes (serão atualizados)${ign?`\n• ${ign} ignorado(s) por estarem incompletos`:""}${d.config?"\n• Ajustes (tipos, formas de pagamento e contas fixas) serão substituídos":""}\n\nNada será apagado.`)) return;
+  if(!confirm(`Importar backup de ${d.exportadoEm? new Date(d.exportadoEm).toLocaleDateString("pt-BR"):"data desconhecida"}?\n\n• ${novos} lançamento(s) novos\n• ${ok.length-novos} já existentes (serão atualizados)${planoOk.length?`\n• ${planoOk.length} item(ns) de plano`:""}${ign?`\n• ${ign} ignorado(s) por estarem incompletos`:""}${d.config?"\n• Ajustes (tipos, formas de pagamento e contas fixas) serão substituídos":""}\n\nNada será apagado.`)) return;
   try{
     if(ok.length) await store.upsertMany(ok);
+    if(planoOk.length) await store.plano.upsertMany(planoOk);
     if(d.config && Array.isArray(d.config.catOut)){ cfg={...structuredClone(DEFAULT_CFG),...d.config}; await saveCfg(); }
     renderAll(); toast("Backup importado");
   }catch(err){ console.error(err); toast("Erro ao importar: "+(err.code||err.message)); }
@@ -933,7 +1179,7 @@ $("#btnCsv").onclick=async()=>{
   $("#btnLogout").onclick=()=>store.logout();
   let cfgUnsub=null;
   store.onAuth(async u=>{
-    if(!u){ $("#app").hidden=true; $("#loginView").hidden=false; if(unsub){unsub();unsub=null;} if(cfgUnsub){cfgUnsub();cfgUnsub=null;} return; }
+    if(!u){ $("#app").hidden=true; $("#loginView").hidden=false; if(unsub){unsub();unsub=null;} if(unsubPlano){unsubPlano();unsubPlano=null;} if(cfgUnsub){cfgUnsub();cfgUnsub=null;} return; }
     if(useFirebase && !allowed.includes(u.email)){ $("#loginErr").textContent=`O e-mail ${u.email} não tem acesso a este app.`; await store.logout(); return; }
     me={email:u.email, nome:nomeDe(u.email)||u.nome};
     $("#whoName").textContent=me.nome;
